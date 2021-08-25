@@ -15,7 +15,7 @@ client.query('select * from account',(err,res) => {
         console.log(res.rows);
     }
     else{
-        console.log(err.message)
+        console.log(err.message) 
     }
     client.end;
 })
