@@ -9,7 +9,7 @@ const client = new Client({
 })
 
 client.connect();
-
+ 
 client.query('select * from account',(err,res) => {
     if(!err){
         console.log(res.rows);
