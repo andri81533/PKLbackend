@@ -14,7 +14,8 @@ client.connect((err) => {
     }
     let createUserTable = `CREATE TABLE IF NOT EXISTS USERS(id_user SERIAL NOT NULL PRIMARY KEY,
         username varchar(200) unique not null,
-        password varchar(200) not null
+        password varchar(200) not null,
+        role varchar(200) not null
         );`;
     
     client.query(createUserTable, (err, results) => {
@@ -34,7 +35,7 @@ client.connect((err) => {
             var string = JSON.stringify(val)
             var users = JSON.parse(string)
             if(users.rowCount == 0){
-                let createUser = `INSERT INTO USERS(username, password) VALUES ('admin', 'admin');`
+                let createUser = `INSERT INTO USERS(username, password, role) VALUES ('admin', 'admin', 'admin');`
                 client.query(createUser, function (error, results) {
                     if(error){
                         console.log(err)
