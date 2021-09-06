@@ -3,11 +3,13 @@ var bcrypt = require('bcryptjs')
 
 
 exports.register = async function(req, res) {
+    var nama_depan = req.body.nama_depan
+    var nama_bel = req.body.nama_bel
     var username = req.body.username
-    var password = await req.body.password
+    var password = req.body.password
     var role = req.body.role
     var hashedPassword = bcrypt.hashSync(password);
-    var query = `insert into users (username, password, role) values ('${username}', '${password}', '${role}')`
+    var query = `insert into users (nama_depan, nama_bel, username, password, role) values ('${nama_depan}', '${nama_bel}', '${username}', '${hashedPassword}', '${role}')`
 
     connection.query(query, (err, results) => {
         if(err){

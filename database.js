@@ -14,6 +14,8 @@ client.connect((err) => {
         throw err
     }
     let createUserTable = `CREATE TABLE IF NOT EXISTS USERS(id_user SERIAL NOT NULL PRIMARY KEY,
+        nama_depan varchar(200) not null,
+        nama_bel varchar(200) not null,
         username varchar(200) unique not null,
         password varchar(200) not null,
         role varchar(200) not null
@@ -37,7 +39,7 @@ client.connect((err) => {
             var users = JSON.parse(string)
             if(users.rowCount == 0){
                 var hashPassword = bcrypt.hashSync('admin123') 
-                let createUser = `INSERT INTO USERS(username, password, role) VALUES ('admin', '${hashPassword}', 'admin');`
+                let createUser = `INSERT INTO USERS(nama_depan, nama_bel, username, password, role) VALUES ('admin','admin','admin', '${hashPassword}', 'admin');`
                 client.query(createUser, function (error, results) {
                     if(error){
                         console.log(err)
