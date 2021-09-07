@@ -78,6 +78,7 @@ exports.login = function (req, res, next) {
                     refreshToken: refreshToken,
                     status: "success",
                     username:userDetails[0].username,
+                    role:userDetails[0].role,
                     id_user:userDetails[0].id_user
                 });
                 res.end()
