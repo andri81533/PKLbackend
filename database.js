@@ -13,12 +13,48 @@ client.connect((err) => {
     if(err){
         throw err
     }
+    let createRoleTable = `CREATE TABLE IF NOT EXISTS role(
+        id_role SERIAL NOT NULL PRIMARY KEY,     
+       role varchar(50) unique not null
+        );`;
+    
+    client.query(createRoleTable, (err, results) => {
+        if(err){
+            throw err
+        }
+        var val = []
+        var setValue = (value) => {
+            val = value
+        }
+        let query = `SELECT * FROM role;`
+        client.query(query, (err, results) => {
+            if(err){
+                throw err
+            }
+            setValue(results)
+            var string = JSON.stringify(val)
+            var roles = JSON.parse(string)
+            if(roles.rowCount == 0){
+              
+                let createRoles = ` insert into role ( role ) values('Admin'),('User'),('Manager');`
+                client.query(createRoles, function (error, results) {
+                    if(error){
+                        console.log(err)
+                    }
+                });
+            }
+            
+
+            // client.query()
+        })
+    })
     let createUserTable = `CREATE TABLE IF NOT EXISTS USERS(id_user SERIAL NOT NULL PRIMARY KEY,
         nama_depan varchar(200) not null,
         nama_bel varchar(200) not null,
         username varchar(200) unique not null,
         password varchar(200) not null,
-        role varchar(200) not null
+        id_role integer not null,
+        CONSTRAINT role FOREIGN KEY(id_role) REFERENCES role(id_role)
         );`;
     
     client.query(createUserTable, (err, results) => {
@@ -39,7 +75,7 @@ client.connect((err) => {
             var users = JSON.parse(string)
             if(users.rowCount == 0){
                 var hashPassword = bcrypt.hashSync('admin123') 
-                let createUser = `INSERT INTO USERS(nama_depan, nama_bel, username, password, role) VALUES ('admin','admin','admin', '${hashPassword}', 'admin');`
+                let createUser = `INSERT INTO USERS(nama_depan, nama_bel, username, password, id_role) VALUES ('admin','admin','admin', '${hashPassword}', 1);`
                 client.query(createUser, function (error, results) {
                     if(error){
                         console.log(err)
