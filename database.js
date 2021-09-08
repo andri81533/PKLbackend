@@ -51,12 +51,14 @@ client.connect((err) => {
             // client.query()
         })
     })
-    let createProjectTable = `CREATE TABLE IF NOT EXISTS PROJECT(id_project SERIAL NOT NULL PRIMARY KEY,
-        nama_project varchar(200) unique not null,
-        start_date varchar(200) not null,
-        end_date varchar(200) not null,
-        nama_pm varchar(200) not null,
-        task_list varchar(200) not null
+    let createProjectTable = `CREATE TABLE IF NOT EXISTS Project(id_task SERIAL NOT NULL PRIMARY KEY,
+        nama_project varchar(200)  not null,
+        tanggal_mulai varchar(200) not null,
+        tanggal_akhir varchar(200) not null,
+        nama_manager varchar(200) not null,
+        nama_karyawan varchar(200) not null,
+        deskripsi varchar(200) not null
+        
         );`;
     
     client.query(createProjectTable, (err, results) => {
@@ -76,7 +78,7 @@ client.connect((err) => {
             var string = JSON.stringify(val)
             var project = JSON.parse(string)
             if(project.rowCount == 0){
-                let createproject = `INSERT INTO PROJECT(nama_project, start_date, end_date, nama_pm, task_list) VALUES ('Test', '2020-2-1', '2020-2-13', 'undified', 'undified');`
+                let createproject = `INSERT INTO PROJECT(nama_project, tanggal_mulai, tanggal_akhir, nama_manager, nama_karyawan, deskripsi) VALUES ('Test', '2020-2-1', '2020-2-13', 'Agung', 'diterima', 'test');`
                 client.query(createproject, function (error, results) {
                     if(error){
                         console.log(err)
