@@ -4,6 +4,7 @@ module.exports = (app) => {
     var auth = require('./controller/login')
     var regis = require('./controller/register')
     var project = require('./controller/createproject')
+    var task = require('./controller/createtask')
     app.get('/api', async (req, res) => {
         res.json({
             message: "Welcome to the SUDIN API"
@@ -26,6 +27,9 @@ module.exports = (app) => {
     
     app.route('/api/project')
         .post(project.createproject)
+
+    app.route('/api/task')
+        .post(task.createtask)
 
         
 }

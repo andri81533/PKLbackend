@@ -92,12 +92,10 @@ client.connect((err) => {
     })
     let createTaskTable = `CREATE TABLE IF NOT EXISTS TASK(id_task SERIAL NOT NULL PRIMARY KEY,
         nama_task varchar(200) unique not null,
-        start_date varchar(200) not null,
-        end_date varchar(200) not null,
+        tanggal_mulai varchar(200) not null,
+        tanggal_akhir varchar(200) not null,
         nama_karyawan varchar(200) not null,
-        status varchar(200) not null,
-        deskripsi varchar(200) not null,
-        file varchar(200) not null
+        deskripsi varchar(200) not null
         
         );`;
     
@@ -118,7 +116,7 @@ client.connect((err) => {
             var string = JSON.stringify(val)
             var task = JSON.parse(string)
             if(task.rowCount == 0){
-                let createTask = `INSERT INTO TASK(nama_task, start_date, end_date, nama_karyawan, status, deskripsi, file) VALUES ('Test', '2020-2-1', '2020-2-13', 'Agung', 'diterima', 'test', 'test');`
+                let createTask = `INSERT INTO TASK(nama_task, tanggal_mulai, tanggal_akhir, nama_karyawan, deskripsi) VALUES ('Test', '2020-2-1', '2020-2-13', 'Agung', 'test');`
                 client.query(createTask, function (error, results) {
                     if(error){
                         console.log(err)
