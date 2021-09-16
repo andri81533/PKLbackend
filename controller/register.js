@@ -9,7 +9,7 @@ exports.register = async function(req, res) {
     var password = req.body.password
     var role = req.body.role
     var hashedPassword = bcrypt.hashSync(password);
-    var query = `insert into users (nama_depan, nama_bel, username, password, role) values ('${nama_depan}', '${nama_bel}', '${username}', '${hashedPassword}', '${role}')`
+    var query = `insert into users (nama_depan, nama_bel, username, password, id_role) values ('${nama_depan}', '${nama_bel}', '${username}', '${hashedPassword}', '${role}')`
 
     connection.query(query, (err, results) => {
         if(err){
