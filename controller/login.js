@@ -70,7 +70,8 @@ exports.login = function (req, res, next) {
                 refreshTokens[refreshToken] = {
                     username: userDetails[0].username,
                     token: token,
-                    refreshToken: refreshToken
+                    refreshToken: refreshToken,
+                
                 }
                 res.send({
                     auth: true,
@@ -78,7 +79,7 @@ exports.login = function (req, res, next) {
                     refreshToken: refreshToken,
                     status: "success",
                     username:userDetails[0].username,
-                    role:userDetails[0].role,
+                    id_role:userDetails[0].id_role,
                     id_user:userDetails[0].id_user
                 });
                 res.end()

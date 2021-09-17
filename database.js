@@ -48,6 +48,41 @@ client.connect((err) => {
             // client.query()
         })
     })
+    let createStatusTable = `CREATE TABLE IF NOT EXISTS status(
+        id_status SERIAL NOT NULL PRIMARY KEY,     
+       status varchar(50) unique not null
+        );`;
+    
+    client.query(createStatusTable, (err, results) => {
+        if(err){
+            throw err
+        }
+        var val = []
+        var setValue = (value) => {
+            val = value
+        }
+        let query = `SELECT * FROM status;`
+        client.query(query, (err, results) => {
+            if(err){
+                throw err
+            }
+            setValue(results)
+            var string = JSON.stringify(val)
+            var status = JSON.parse(string)
+            if(status.rowCount == 0){
+              
+                let createStatus = ` insert into status ( status ) values('onprogress'),('diterima'),('ditolak');`
+                client.query(createStatus, function (error, results) {
+                    if(error){
+                        console.log(err)
+                    }
+                });
+            }
+            
+
+            // client.query()
+        })
+    })
     let createUserTable = `CREATE TABLE IF NOT EXISTS USERS(id_user SERIAL NOT NULL PRIMARY KEY,
         nama_depan varchar(200) not null,
         nama_bel varchar(200) not null,
@@ -87,13 +122,18 @@ client.connect((err) => {
             // client.query()
         })
     })
-    let createProjectTable = `CREATE TABLE IF NOT EXISTS Project(id_task SERIAL NOT NULL PRIMARY KEY,
+    let createProjectTable = `CREATE TABLE IF NOT EXISTS Project(id_project SERIAL NOT NULL PRIMARY KEY,
         nama_project varchar(200)  not null,
         tanggal_mulai varchar(200) not null,
         tanggal_akhir varchar(200) not null,
         nama_manager varchar(200) not null,
         nama_karyawan varchar(200) not null,
-        deskripsi varchar(200) not null
+        deskripsi varchar(200) not null,
+        id_status integer not null,
+        id_user integer not null,
+        CONSTRAINT status FOREIGN KEY(id_status) REFERENCES status(id_status),
+        CONSTRAINT users FOREIGN KEY(id_user) REFERENCES users(id_user)
+        
         
         );`;
     
@@ -114,7 +154,7 @@ client.connect((err) => {
             var string = JSON.stringify(val)
             var project = JSON.parse(string)
             if(project.rowCount == 0){
-                let createproject = `INSERT INTO PROJECT(nama_project, tanggal_mulai, tanggal_akhir, nama_manager, nama_karyawan, deskripsi) VALUES ('Test', '2020-2-1', '2020-2-13', 'Agung', 'diterima', 'test');`
+                let createproject = `INSERT INTO PROJECT(nama_project, tanggal_mulai, tanggal_akhir, nama_manager, nama_karyawan, deskripsi, id_status, id_user) VALUES ('Test', '2020-2-1', '2020-2-13', 'Agung', 'bambang', 'test',1,1);`
                 client.query(createproject, function (error, results) {
                     if(error){
                         console.log(err)
@@ -131,7 +171,15 @@ client.connect((err) => {
         tanggal_mulai varchar(200) not null,
         tanggal_akhir varchar(200) not null,
         nama_karyawan varchar(200) not null,
-        deskripsi varchar(200) not null
+        deskripsi varchar(200) not null,
+        id_status integer not null,
+        id_project integer null,
+        id_user integer not null,
+        CONSTRAINT project FOREIGN KEY(id_project) REFERENCES project(id_project),
+        CONSTRAINT status FOREIGN KEY(id_status) REFERENCES status(id_status),
+        CONSTRAINT users FOREIGN KEY(id_user) REFERENCES users(id_user)
+        
+        
         
         );`;
     
@@ -152,7 +200,7 @@ client.connect((err) => {
             var string = JSON.stringify(val)
             var task = JSON.parse(string)
             if(task.rowCount == 0){
-                let createTask = `INSERT INTO TASK(nama_task, tanggal_mulai, tanggal_akhir, nama_karyawan, deskripsi) VALUES ('Test', '2020-2-1', '2020-2-13', 'Agung', 'test');`
+                let createTask = `INSERT INTO TASK(nama_task, tanggal_mulai, tanggal_akhir, nama_karyawan, deskripsi, id_project, id_user,id_status) VALUES ('Test', '2020-2-1', '2020-2-13', 'Agung', 'test',1,1,1);`
                 client.query(createTask, function (error, results) {
                     if(error){
                         console.log(err)
