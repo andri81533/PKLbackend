@@ -5,6 +5,7 @@ module.exports = (app) => {
     var regis = require('./controller/register')
     var project = require('./controller/project/project')
     var task = require('./controller/task/task')
+    var token = require ('./token')
     app.get('/api', async (req, res) => {
         res.json({
             message: "Welcome to the SUDIN API"
@@ -14,7 +15,7 @@ module.exports = (app) => {
         .post(auth.token)
 
     app.route('/api/users')
-        .get(user.readUsers)
+        .get(token.verifyToken, user.readUsers)
     
     app.route('/api/login')
         .post(auth.login)
@@ -23,19 +24,20 @@ module.exports = (app) => {
         .post(auth.logout)
         
     app.route('/api/register')
-        .post(regis.register)
+        .post(token.verifyToken, regis.register)
     
     app.route('/api/project')
-        .post(project.createproject)
+        .post(token.verifyToken, project.createproject)
 
     app.route('/api/project')
-        .get(project.getProjects)
+        .get(token.verifyToken, project.getProjects)
 
     app.route('/api/task')
-        .post(task.createtask)
+        .post(token.verifyToken, task.createtask)
 
-     app.route('/api/task')
-        .get(task.getTask)
+    app.route('/api/task')
+        .get(token.verifyToken, task.getTask)
+    
 
 
         
