@@ -89,6 +89,7 @@ client.connect((err) => {
         username varchar(200) unique not null,
         password varchar(200) not null,
         id_role integer not null,
+
         CONSTRAINT role FOREIGN KEY(id_role) REFERENCES role(id_role)
         );`;
     
@@ -110,7 +111,7 @@ client.connect((err) => {
             var users = JSON.parse(string)
             if(users.rowCount == 0){
                 var hashPassword = bcrypt.hashSync('admin123') 
-                let createUser = `INSERT INTO USERS(nama_depan, nama_bel, username, password, id_role) VALUES ('admin','admin','admin', '${hashPassword}', 1);`
+                let createUser = `INSERT INTO USERS(nama_depan, nama_bel, username, password, id_role) VALUES ('admin','admin','admin', '${hashPassword}', 1),('karyawan','karyawan','karyawan', '${hashPassword}', 2),('manager','manager','manager', '${hashPassword}', 3);`
                 client.query(createUser, function (error, results) {
                     if(error){
                         console.log(err)
@@ -126,15 +127,11 @@ client.connect((err) => {
         nama_project varchar(200)  not null,
         tanggal_mulai varchar(200) not null,
         tanggal_akhir varchar(200) not null,
-        nama_manager varchar(200) not null,
-        nama_karyawan varchar(200) not null,
         deskripsi varchar(200) not null,
-        id_status integer not null,
-        id_user integer not null,
-        CONSTRAINT status FOREIGN KEY(id_status) REFERENCES status(id_status),
-        CONSTRAINT users FOREIGN KEY(id_user) REFERENCES users(id_user)
-        
-        
+        id_status integer not null REFERENCES status(id_status),
+        id_user integer not null REFERENCES users(id_user),
+        id_manager integer not null REFERENCES users(id_user),
+        id_karyawan integer not null REFERENCES users(id_user)
         );`;
     
     client.query(createProjectTable, (err, results) => {
@@ -154,7 +151,7 @@ client.connect((err) => {
             var string = JSON.stringify(val)
             var project = JSON.parse(string)
             if(project.rowCount == 0){
-                let createproject = `INSERT INTO PROJECT(nama_project, tanggal_mulai, tanggal_akhir, nama_manager, nama_karyawan, deskripsi, id_status, id_user) VALUES ('Test', '2020-2-1', '2020-2-13', 'Agung', 'bambang', 'test',1,1);`
+                let createproject = `INSERT INTO PROJECT(nama_project, tanggal_mulai, tanggal_akhir, deskripsi, id_status, id_user, id_manager, id_karyawan ) VALUES ('Test', '2020-2-1', '2020-2-13', 'test',1,1, 3, 2);`
                 client.query(createproject, function (error, results) {
                     if(error){
                         console.log(err)
@@ -170,17 +167,11 @@ client.connect((err) => {
         nama_task varchar(200) unique not null,
         tanggal_mulai varchar(200) not null,
         tanggal_akhir varchar(200) not null,
-        nama_karyawan varchar(200) not null,
         deskripsi varchar(200) not null,
-        id_status integer not null,
-        id_project integer null,
-        id_user integer not null,
-        CONSTRAINT project FOREIGN KEY(id_project) REFERENCES project(id_project),
-        CONSTRAINT status FOREIGN KEY(id_status) REFERENCES status(id_status),
-        CONSTRAINT users FOREIGN KEY(id_user) REFERENCES users(id_user)
-        
-        
-        
+        id_status integer not null REFERENCES status(id_status),
+        id_project integer null REFERENCES project(id_project),
+        id_user integer not null REFERENCES users(id_user),
+        id_karyawan integer not null REFERENCES users(id_user)
         );`;
     
     client.query(createTaskTable, (err, results) => {
@@ -200,7 +191,7 @@ client.connect((err) => {
             var string = JSON.stringify(val)
             var task = JSON.parse(string)
             if(task.rowCount == 0){
-                let createTask = `INSERT INTO TASK(nama_task, tanggal_mulai, tanggal_akhir, nama_karyawan, deskripsi, id_project, id_user,id_status) VALUES ('Test', '2020-2-1', '2020-2-13', 'Agung', 'test',1,1,1);`
+                let createTask = `INSERT INTO TASK(nama_task, tanggal_mulai, tanggal_akhir, deskripsi, id_project, id_user,id_status, id_karyawan) VALUES ('Test', '2020-2-1', '2020-2-13', 'test',1,1,1,2);`
                 client.query(createTask, function (error, results) {
                     if(error){
                         console.log(err)

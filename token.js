@@ -7,7 +7,7 @@ exports.verifyToken = (req, res, next) => {
         const bearerToken = bearer[1]
         req.token = bearerToken
         next()
-        console.log(bearerToken)
+ 
     }
     else{
         res.sendStatus(403)

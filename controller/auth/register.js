@@ -1,4 +1,4 @@
-var connection = require('../database')
+var connection = require('../../database')
 var bcrypt = require('bcryptjs')
 
 

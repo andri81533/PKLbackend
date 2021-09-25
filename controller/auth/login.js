@@ -1,5 +1,5 @@
 var jwt = require('jsonwebtoken')
-var connection = require('../database')
+var connection = require('../../database')
 var bcrypt = require('bcryptjs')
 var randtoken = require('rand-token');
 var dateFormat = require('dateformat')
@@ -28,9 +28,9 @@ exports.token = function (req, res, next) {
 exports.login = function (req, res, next) {
     var username = req.body.username
     var password = req.body.password
-    console.log(username)
+
     let query = `SELECT * FROM USERS WHERE (username ='${username}');`
-    console.log(password)
+ 
     
     var val = []
     var setValue = function (value) {
@@ -41,7 +41,7 @@ exports.login = function (req, res, next) {
         
         setValue(results.rows);
         var stringUser = JSON.stringify(val)
-        console.log(stringUser)
+
         var userDetails = JSON.parse(stringUser)
 
         if(stringUser === '[]'){

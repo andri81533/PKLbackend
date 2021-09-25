@@ -7,18 +7,18 @@ exports.createtask = async function(req, res) {
     var nama_task = req.body.nama_task
     var tanggal_mulai = req.body.tanggal_mulai
     var tanggal_akhir = req.body.tanggal_akhir
-    var nama_karyawan = req.body.nama_karyawan
+    var id_karyawan = req.body.id_karyawan
     var deskripsi = req.body.deskripsi
     var id_user = req.body.id_user
     var query = "";
     if(id_project !== null && id_project !==undefined){
-        query = `insert into task (nama_task, tanggal_mulai, tanggal_akhir, nama_karyawan, deskripsi, id_project, id_user, id_status) values ('${nama_task}', '${tanggal_mulai}', '${tanggal_akhir}', '${nama_karyawan}', '${deskripsi}', ${id_project}, ${id_user},1);`
+        query = `insert into task (nama_task, tanggal_mulai, tanggal_akhir,  deskripsi, id_project, id_user, id_status, id_karyawan) values ('${nama_task}', '${tanggal_mulai}', '${tanggal_akhir}', '${nama_karyawan}', '${deskripsi}', ${id_project}, ${id_user},1, ${id_karyawan});`
     }
     else{
-        query = `insert into task (nama_task, tanggal_mulai, tanggal_akhir, nama_karyawan, deskripsi,id_user, id_status) values ('${nama_task}', '${tanggal_mulai}', '${tanggal_akhir}', '${nama_karyawan}', '${deskripsi}',  ${id_user},1);`
+        query = `insert into task (nama_task, tanggal_mulai, tanggal_akhir,deskripsi,id_user, id_status, id_karyawan) values ('${nama_task}', '${tanggal_mulai}', '${tanggal_akhir}', '${nama_karyawan}', '${deskripsi}',  ${id_user},1, ${id_karyawan});`
 
     }
-    console.log(query)
+
     
     connection.query(query, (err, results) => {
         if(err){
@@ -45,18 +45,49 @@ exports.getTask = async function(req, res){
         query = `select * from task where id_user = ${id_user};`
 
     }
- console.log(query)
 
 
-    connection.query(query, (err, results) => {
+
+    connection.query(query, async(err, results) => {
         if(err){
             throw err
         }
         else{
-            console.log(results);
+
+            let listTask = results.rows
+            await Promise.all(listTask.map(async(element)=>{
+                let id_karyawan = element.id_karyawan;
+
+                var nama_karyawan = ""
+
+                var setNamaKaryawan = function(nama){
+                    nama_karyawan = nama;
+                }
+
+                await new Promise((resolve, reject)=>{
+                    const query = `select * from users where id_user = ${id_karyawan} ;`
+                    connection.query(query, (err, results)=>{
+                        if(err){
+                            throw err
+                        }
+                        let nama_depan = results.rows[0].nama_depan;
+                        let nama_belakang = results.rows[0].nama_bel;
+                        let full_name = nama_depan + " " + nama_belakang;
+
+                        setNamaKaryawan(full_name)
+                        resolve()
+                    })
+
+                })
+
+                Object.assign(element, {"nama_karyawan":nama_karyawan})
+
+
+            }))
+     
             res.send({
                 message: "success",
-                data: results.rows
+                data: listTask
             })
         }
     })
