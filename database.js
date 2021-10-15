@@ -131,7 +131,7 @@ client.connect((err) => {
         id_status integer not null REFERENCES status(id_status),
         id_user integer not null REFERENCES users(id_user),
         id_manager integer not null REFERENCES users(id_user),
-        id_karyawan integer not null REFERENCES users(id_user)
+        id_karyawan integer ARRAY not null
         );`;
     
     client.query(createProjectTable, (err, results) => {
@@ -151,7 +151,7 @@ client.connect((err) => {
             var string = JSON.stringify(val)
             var project = JSON.parse(string)
             if(project.rowCount == 0){
-                let createproject = `INSERT INTO PROJECT(nama_project, tanggal_mulai, tanggal_akhir, deskripsi, id_status, id_user, id_manager, id_karyawan ) VALUES ('Test', '2020-2-1', '2020-2-13', 'test',1,1, 3, 2);`
+                let createproject = `INSERT INTO PROJECT(nama_project, tanggal_mulai, tanggal_akhir, deskripsi, id_status, id_user, id_manager, id_karyawan ) VALUES ('Test', '2020-2-1', '2020-2-13', 'test',1,1, 3, '{2}');`
                 client.query(createproject, function (error, results) {
                     if(error){
                         console.log(err)
@@ -171,7 +171,7 @@ client.connect((err) => {
         id_status integer not null REFERENCES status(id_status),
         id_project integer null REFERENCES project(id_project),
         id_user integer not null REFERENCES users(id_user),
-        id_karyawan integer not null REFERENCES users(id_user)
+        id_karyawan integer ARRAY not null
         );`;
     
     client.query(createTaskTable, (err, results) => {
@@ -191,7 +191,7 @@ client.connect((err) => {
             var string = JSON.stringify(val)
             var task = JSON.parse(string)
             if(task.rowCount == 0){
-                let createTask = `INSERT INTO TASK(nama_task, tanggal_mulai, tanggal_akhir, deskripsi, id_project, id_user,id_status, id_karyawan) VALUES ('Test', '2020-2-1', '2020-2-13', 'test',1,1,1,2);`
+                let createTask = `INSERT INTO TASK(nama_task, tanggal_mulai, tanggal_akhir, deskripsi, id_project, id_user,id_status, id_karyawan) VALUES ('Test', '2020-2-1', '2020-2-13', 'test',1,1,1,'{2}');`
                 client.query(createTask, function (error, results) {
                     if(error){
                         console.log(err)

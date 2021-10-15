@@ -1,3 +1,15 @@
+const multer = require('multer')
+var storage = multer.diskStorage({
+    destination:(req,file,cb) => {
+        cb(null,'Public')
+    },
+    filename:(req,file,cb) => {
+        cb(null, Date.now() + '-' + file.originalname)
+    }
+});
+
+var upload = multer({storage}).single('file');
+
 module.exports = (app) => {
 
     var user = require('./controller/user/user')
@@ -5,11 +17,20 @@ module.exports = (app) => {
     var regis = require('./controller/auth/register')
     var project = require('./controller/project/project')
     var task = require('./controller/task/task')
+    var status= require('./controller/status/status')
     var token = require ('./token')
 
     app.get('/api', async (req, res) => {
         res.json({
             message: "Welcome to the SUDIN API"
+        })
+    })
+    app.post('/upload' , (req,res) => {
+        upload(req,res, (err) => {
+            if(err) {
+                return res.status(500).json(err)
+            }
+            return res.status(200).send(req.file)
         })
     })
     app.route('/api/token')
@@ -38,6 +59,15 @@ module.exports = (app) => {
 
     app.route('/api/task')
         .get(token.verifyToken, task.getTask)
+        
+    app.route('/api/project/detail')
+        .get(token.verifyToken, project.getDetailProject)
+
+    app.route('/api/task/detail')
+        .get(token.verifyToken, task.getDetailTask)
+
+    app.route('/api/status')
+        .get(token.verifyToken, status.changeStatus)
       
 }
     

@@ -12,19 +12,20 @@ exports.createtask = async function(req, res) {
     var id_user = req.body.id_user
     var query = "";
     if(id_project !== null && id_project !==undefined){
-        query = `insert into task (nama_task, tanggal_mulai, tanggal_akhir,  deskripsi, id_project, id_user, id_status, id_karyawan) values ('${nama_task}', '${tanggal_mulai}', '${tanggal_akhir}', '${nama_karyawan}', '${deskripsi}', ${id_project}, ${id_user},1, ${id_karyawan});`
+        query = `insert into task (nama_task, tanggal_mulai, tanggal_akhir,  deskripsi, id_project, id_user, id_status, id_karyawan) values ('${nama_task}', '${tanggal_mulai}', '${tanggal_akhir}', '${deskripsi}', ${id_project}, ${id_user},1, ARRAY[${id_karyawan}]);`
     }
     else{
-        query = `insert into task (nama_task, tanggal_mulai, tanggal_akhir,deskripsi,id_user, id_status, id_karyawan) values ('${nama_task}', '${tanggal_mulai}', '${tanggal_akhir}', '${nama_karyawan}', '${deskripsi}',  ${id_user},1, ${id_karyawan});`
+        query = `insert into task (nama_task, tanggal_mulai, tanggal_akhir, deskripsi, id_user,id_status, id_karyawan) values ('${nama_task}', '${tanggal_mulai}', '${tanggal_akhir}', '${deskripsi}',  ${id_user},1, ARRAY[${id_karyawan}]);`
 
     }
-
+    console.log(query)
     
     connection.query(query, (err, results) => {
         if(err){
             throw err
         }
         else{
+
             res.send({
                 message: "success",
                 data: results.rows
@@ -55,32 +56,57 @@ exports.getTask = async function(req, res){
         else{
 
             let listTask = results.rows
+
             await Promise.all(listTask.map(async(element)=>{
-                let id_karyawan = element.id_karyawan;
 
-                var nama_karyawan = ""
-
-                var setNamaKaryawan = function(nama){
-                    nama_karyawan = nama;
+                let list_id_karyawan = element.id_karyawan;
+                let status = "";
+                var setStatus = function(nama){
+                    status = nama;
                 }
+                var nama_karyawan = []
+                var setNamaKaryawan = function(nama){
+                    nama_karyawan.push(nama);
+                }
+                await Promise.all(list_id_karyawan.map(async(el)=>{
+                   
+                    await new Promise((resolve, reject)=>{
+                        const query = `select * from users where id_user = ${el} ;`
+                      
+                        connection.query(query, (err, results)=>{
+                            if(err){
+                                throw err
+                            }
+                            let nama_depan = results.rows[0].nama_depan;
+                            let nama_belakang = results.rows[0].nama_bel;
+                            let full_name = nama_depan + " " + nama_belakang;
+                         
+                            setNamaKaryawan(full_name)
+                            resolve()
+                        })
+
+                    })
+
+                }))
 
                 await new Promise((resolve, reject)=>{
-                    const query = `select * from users where id_user = ${id_karyawan} ;`
+                    const query = `select * from status where id_status = ${element.id_status} ;`
+                  
                     connection.query(query, (err, results)=>{
                         if(err){
                             throw err
                         }
-                        let nama_depan = results.rows[0].nama_depan;
-                        let nama_belakang = results.rows[0].nama_bel;
-                        let full_name = nama_depan + " " + nama_belakang;
-
-                        setNamaKaryawan(full_name)
+                       
+                        setStatus(results.rows[0].status)
                         resolve()
                     })
 
                 })
 
-                Object.assign(element, {"nama_karyawan":nama_karyawan})
+
+
+                
+                Object.assign(element, {"nama_karyawan":nama_karyawan, "nama_status":status})
 
 
             }))
@@ -91,4 +117,90 @@ exports.getTask = async function(req, res){
             })
         }
     })
+}
+
+
+exports.getDetailTask = async function(req, res){    
+    var id_task = req.query.id_task;
+    let query = `SELECT * FROM TASK WHERE id_task = ${id_task};`
+
+    console.log(query);
+    connection.query(query, async(err,results)=>{
+        if(err){
+            throw err;
+        }
+        var task = results.rows[0];
+        var list_nama_karyawan = []
+        var setListKaryawan = function(nama){
+            list_nama_karyawan.push(nama);
+        }
+
+
+
+        console.log(task);
+
+        await Promise.all(task.id_karyawan.map(async(element)=>{
+            var nama_individu = "";
+            var setNamaKaryawan = function(nama){
+                nama_individu = nama;
+            }
+            await new Promise((resolve, reject)=>{
+                const query = `select * from users where id_user = ${element} ;`
+                connection.query(query, (err, results)=>{
+                    if(err){
+                        throw err
+                    }
+                    let nama_depan = results.rows[0].nama_depan;
+                    let nama_belakang = results.rows[0].nama_bel;
+                    let full_name = nama_depan + " " + nama_belakang;
+
+                    setNamaKaryawan(full_name)
+                    resolve()
+                })
+
+            })
+            setListKaryawan(nama_individu);
+
+        }))
+
+        var status = "";
+
+        var setStatus = function(nama){
+            status = nama;
+
+        }
+
+
+        await new Promise((resolve, reject)=>{
+            const query = `select * from status where id_status = ${task.id_status} ;`
+            connection.query(query, (err, results)=>{
+                if(err){
+                    throw err
+                }
+                let statusName = results.rows[0].status;
+               
+
+                setStatus(statusName)
+                resolve()
+            })
+
+        })
+
+
+
+
+        Object.assign(task, {"nama_karyawan":list_nama_karyawan, "nama_status":status});
+
+        res.send({
+            message: "success",
+            data: task
+        })
+
+
+
+
+
+
+    })
+
 }
